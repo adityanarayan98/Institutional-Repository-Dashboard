@@ -149,6 +149,8 @@ Google Sheet → Published CSV → Google Apps Script → HTML Interface
 
 ## Customization
 
+<img width="1413" height="755" alt="image" src="https://github.com/user-attachments/assets/5b9ea534-cddc-43c3-a731-8b0b7e07251b" />
+
 ### Adding New Filters
 
 1. Add the field to `CONFIG.columns` in `code.gs`
