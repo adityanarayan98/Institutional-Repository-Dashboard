@@ -150,6 +150,8 @@ Google Sheet → Published CSV → Google Apps Script → HTML Interface
 ## Customization
 
 <img width="1413" height="755" alt="image" src="https://github.com/user-attachments/assets/5b9ea534-cddc-43c3-a731-8b0b7e07251b" />
+<img width="1428" height="855" alt="image" src="https://github.com/user-attachments/assets/2488a8d4-57fb-4405-b7ba-42e9620f4c99" />
+
 
 ### Adding New Filters
 
