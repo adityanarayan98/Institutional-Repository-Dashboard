@@ -32,7 +32,7 @@ Your CSV file should have these columns:
 | year | Publication year |
 | doi | Digital Object Identifier |
 | link | URL to publication |
-| dc.language.iso | Language code (ISO format) |
+| language | Language |
 | journal | Journal or conference name |
 | title | Publication title |
 | type | Publication type (Article, Review, Conference Paper, etc.) |
@@ -114,6 +114,17 @@ CSV File → Google Apps Script → HTML Interface
 | `PublicationsPage.html` | Frontend UI (HTML, CSS, JavaScript) |
 | `sample_publications.csv` | Sample data file |
 | `README.md` | This file |
+
+## Dashboard
+<img width="1045" height="609" alt="image" src="https://github.com/user-attachments/assets/7bef811f-4781-467f-9bda-1dd06bd654e7" />
+<img width="982" height="592" alt="image" src="https://github.com/user-attachments/assets/1ccc7c97-3464-4459-acd8-af90aaa5c7cc" />
+
+
+
+## Contributor
+1. Aditya Narayan Sahoo
+
+
 
 ## License
 
