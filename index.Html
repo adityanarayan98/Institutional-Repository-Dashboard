@@ -381,13 +381,14 @@
     
     .modal-content {
       background-color: white;
-      margin: 5% auto;
-      padding: 20px;
+      margin: 2% auto;
+      padding: 25px;
       border-radius: 8px;
-      width: 80%;
-      max-width: 500px;
-      max-height: 80vh;
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
       overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
     
     .modal-header {
@@ -642,11 +643,32 @@
       document.getElementById('loadingOverlay').style.display = 'none';
     }
     
-    // Load data from server
+    // Load data from server with caching
     function loadData() {
       showLoading();
       document.getElementById('results').innerHTML = '<p>Loading publications...</p>';
       
+      // Check if data is cached in browser
+      var cachedData = localStorage.getItem('publicationsData');
+      var cacheTimestamp = localStorage.getItem('publicationsCacheTime');
+      var cacheExpiry = 30 * 60 * 1000; // 30 minutes cache expiry
+      
+      // Use cached data if available and not expired
+      if (cachedData && cacheTimestamp && (Date.now() - parseInt(cacheTimestamp) < cacheExpiry)) {
+        try {
+          var parsedData = JSON.parse(cachedData);
+          hideLoading();
+          processData(parsedData);
+          document.getElementById('results').innerHTML = '<p style="color: #28a745; font-weight: bold;">✓ Using cached data for faster loading</p>';
+          return;
+        } catch (e) {
+          // If parsing fails, clear cache and fetch fresh data
+          localStorage.removeItem('publicationsData');
+          localStorage.removeItem('publicationsCacheTime');
+        }
+      }
+      
+      // Fetch fresh data from server
       google.script.run
         .withSuccessHandler(function(response) {
           hideLoading();
@@ -657,20 +679,34 @@
             return;
           }
           
-          // Store all publications for filtering
-          allPublications = response.publications || [];
-          facets = response.facets || {};
-          filteredPublications = allPublications;
-          dataLoaded = true;
+          // Cache the data in browser
+          try {
+            localStorage.setItem('publicationsData', JSON.stringify(response));
+            localStorage.setItem('publicationsCacheTime', Date.now().toString());
+          } catch (e) {
+            // Storage might be full or not available, continue without caching
+            console.warn('Could not cache data:', e);
+          }
           
-          renderFacets();
-          applyFilters();
+          processData(response);
         })
         .withFailureHandler(function(error) {
           hideLoading();
           document.getElementById('results').innerHTML = '<p>Error loading data: ' + error.message + '</p>';
         })
         .getAllPublicationsWithFacets();
+    }
+    
+    // Process data (shared function for cached and fresh data)
+    function processData(response) {
+      // Store all publications for filtering
+      allPublications = response.publications || [];
+      facets = response.facets || {};
+      filteredPublications = allPublications;
+      dataLoaded = true;
+      
+      renderFacets();
+      applyFilters();
     }
     
     // Toggle facet section - check if collapsed class exists
@@ -751,26 +787,46 @@
       
       document.getElementById('modalTitle').innerText = 'Select ' + type;
       
-      var html = '';
-      for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        var isChecked = currentFilters[filterKey].indexOf(item.name) !== -1;
-        html += '<li>';
-        html += '<label>';
-        html += '<input type="checkbox" class="modal-checkbox" data-filter="' + filterKey + '" data-value="' + escapeHtml(String(item.name)) + '" ' + (isChecked ? 'checked' : '') + '>';
-        html += '<span class="facet-name">' + escapeHtml(String(item.name)) + '</span>';
-        html += '<span class="facet-count">(' + item.count + ')</span>';
-        html += '</label>';
-        html += '</li>';
+      // Add search input and Apply Filter button at the top
+      var modalContent = '';
+      modalContent += '<div style="margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #eee;">';
+      modalContent += '<div style="margin-bottom:10px;">';
+      modalContent += '<input type="text" id="modalSearchInput" placeholder="Search ' + type + '..." style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:14px;" onkeyup="filterModalItems()">';
+      modalContent += '</div>';
+      modalContent += '<button onclick="applyModalFilters()" style="width:100%; padding:10px; background:#5b4be9; color:white; border:none; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold;">Apply Filter</button>';
+      modalContent += '</div>';
+      
+      // Add the list of items in columns
+      modalContent += '<div class="modal-columns" id="modalList">';
+      var itemsPerColumn = Math.ceil(items.length / 3); // 3 columns
+      
+      for (var col = 0; col < 3; col++) {
+        modalContent += '<div class="modal-column" style="width: 32%; display: inline-block; vertical-align: top; padding-right: 10px;">';
+        var startIdx = col * itemsPerColumn;
+        var endIdx = Math.min(startIdx + itemsPerColumn, items.length);
+        
+        for (var i = startIdx; i < endIdx; i++) {
+          var item = items[i];
+          var isChecked = currentFilters[filterKey].indexOf(item.name) !== -1;
+          modalContent += '<div class="modal-item" style="padding: 4px 0; border-bottom: 1px solid #eee;">';
+          modalContent += '<label style="display: flex; align-items: center; cursor: pointer; font-size: 14px;">';
+          modalContent += '<input type="checkbox" class="modal-checkbox" data-filter="' + filterKey + '" data-value="' + escapeHtml(String(item.name)) + '" ' + (isChecked ? 'checked' : '') + ' style="margin-right: 8px;">';
+          modalContent += '<span class="facet-name" style="flex: 1;">' + escapeHtml(String(item.name)) + '</span>';
+          modalContent += '<span class="facet-count" style="color: #666; font-size: 12px;">(' + item.count + ')</span>';
+          modalContent += '</label>';
+          modalContent += '</div>';
+        }
+        modalContent += '</div>';
       }
+      modalContent += '</div>';
       
-      // Add Apply Filter button
-      html += '<li style="border:none; padding-top:15px;">';
-      html += '<button onclick="applyModalFilters()" style="width:100%; padding:10px; background:#5b4be9; color:white; border:none; border-radius:4px; cursor:pointer; font-size:14px;">Apply Filter</button>';
-      html += '</li>';
-      
-      document.getElementById('modalList').innerHTML = html;
+      document.getElementById('modalList').innerHTML = modalContent;
       document.getElementById('facetModal').style.display = 'block';
+      
+      // Focus on search input when modal opens
+      setTimeout(function() {
+        document.getElementById('modalSearchInput').focus();
+      }, 100);
     }
     
     // Apply filters from modal
@@ -963,16 +1019,41 @@
         }
       }
       
-      // Sort by count descending
-      dynamicFacets.authors = sortByCount(dynamicFacets.authors);
-      dynamicFacets.departments = sortByCount(dynamicFacets.departments);
-      dynamicFacets.types = sortByCount(dynamicFacets.types);
-      dynamicFacets.years = sortByCount(dynamicFacets.years);
-      dynamicFacets.sources = sortByCount(dynamicFacets.sources);
-      dynamicFacets.openaccess = sortByCount(dynamicFacets.openaccess);
-      dynamicFacets.countries = sortByCount(dynamicFacets.countries);
+      // Sort by count descending, but prioritize currently selected filters
+      dynamicFacets.authors = sortByCountWithPriority(dynamicFacets.authors, currentFilters.author);
+      dynamicFacets.departments = sortByCountWithPriority(dynamicFacets.departments, currentFilters.department);
+      dynamicFacets.types = sortByCountWithPriority(dynamicFacets.types, currentFilters.type);
+      dynamicFacets.years = sortByCountWithPriority(dynamicFacets.years, currentFilters.year);
+      dynamicFacets.sources = sortByCountWithPriority(dynamicFacets.sources, currentFilters.source);
+      dynamicFacets.openaccess = sortByCountWithPriority(dynamicFacets.openaccess, currentFilters.openaccess);
+      dynamicFacets.countries = sortByCountWithPriority(dynamicFacets.countries, currentFilters.country);
       
       return dynamicFacets;
+    }
+    
+    // Sort facets with priority for currently selected filters
+    function sortByCountWithPriority(obj, selectedFilters) {
+      var sorted = [];
+      var selected = [];
+      var others = [];
+      
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          var item = { name: key, count: obj[key] };
+          if (selectedFilters && selectedFilters.indexOf(key) !== -1) {
+            selected.push(item);
+          } else {
+            others.push(item);
+          }
+        }
+      }
+      
+      // Sort selected filters by count (highest first)
+      selected.sort(function(a, b) { return b.count - a.count; });
+      // Sort other filters by count (highest first)
+      others.sort(function(a, b) { return b.count - a.count; });
+      
+      return selected.concat(others);
     }
     
     // Sort object by count
@@ -1184,6 +1265,58 @@
         .replace(/>/g, '>')
         .replace(/"/g, '"')
         .replace(/'/g, '&#039;');
+    }
+    
+    // Filter modal items based on search input
+    function filterModalItems() {
+      var searchInput = document.getElementById('modalSearchInput');
+      var searchTerm = searchInput.value.toLowerCase();
+      var modalItems = document.querySelectorAll('.modal-item');
+      
+      if (searchTerm === '') {
+        // Reset to original order when search is cleared
+        for (var i = 0; i < modalItems.length; i++) {
+          modalItems[i].style.display = 'block';
+          modalItems[i].style.order = i;
+        }
+        return;
+      }
+      
+      var matchingItems = [];
+      var nonMatchingItems = [];
+      
+      // Separate matching and non-matching items
+      for (var i = 0; i < modalItems.length; i++) {
+        var modalItem = modalItems[i];
+        var checkbox = modalItem.querySelector('.modal-checkbox');
+        var facetName = checkbox.getAttribute('data-value').toLowerCase();
+        
+        if (facetName.indexOf(searchTerm) !== -1) {
+          matchingItems.push(modalItem);
+          modalItem.style.display = 'block';
+        } else {
+          nonMatchingItems.push(modalItem);
+          modalItem.style.display = 'none';
+        }
+      }
+      
+      // Sort matching items by count (highest first) and push to top
+      matchingItems.sort(function(a, b) {
+        var countA = parseInt(a.querySelector('.facet-count').textContent.match(/\((\d+)\)/)[1]);
+        var countB = parseInt(b.querySelector('.facet-count').textContent.match(/\((\d+)\)/)[1]);
+        return countB - countA;
+      });
+      
+      // Apply ordering to push matching items to top
+      for (var i = 0; i < matchingItems.length; i++) {
+        matchingItems[i].style.order = i;
+        matchingItems[i].style.display = 'block';
+      }
+      
+      // Hide non-matching items
+      for (var j = 0; j < nonMatchingItems.length; j++) {
+        nonMatchingItems[j].style.display = 'none';
+      }
     }
     
     // Close modal when clicking outside
