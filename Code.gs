@@ -1,7 +1,8 @@
+/**
  * Google Apps Script - Server Side Code
  * Publication Viewer with Google Sheets data
+ * 
 
-// Configuration - Your Google Sheet URL
 // ============ CONFIGURATION - UPDATE THIS SPREADSHEET ID ============
 // Get ID from your Google Sheet URL: docs.google.com/spreadsheets/d/THIS_PART/edit
 var SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
@@ -26,7 +27,7 @@ var FIELD_MAPPING = {
 function doGet() {
   return HtmlService.createTemplateFromFile('PublicationsPage')
       .evaluate()
-      .setTitle('Publications')
+      .setTitle('IITGN Publications')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
       .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
@@ -123,7 +124,6 @@ function processPublication(pub, source) {
     title: title || 'Untitled',
     authors: authors.display,
     authorList: authors.list,
-    iitgnAuthors: authors.iitgn,
     year: year || 'N/A',
     type: type || 'Publication',
     department: department.display,
@@ -139,19 +139,18 @@ function processPublication(pub, source) {
 
 /**
  * Parse author string - NO BOLDING
- * Simple: split by | or ; or ,
+ * Simple: split by || delimiter only
  */
 function parseAuthorsSimple(authorString) {
   var authors = [];
-  var iitgnAuthors = [];
   var displayParts = [];
   
   if (!authorString) {
-    return { display: '', list: [], iitgn: [] };
+    return { display: '', list: [] };
   }
   
-  // Split by || or ; or ,
-  var parts = authorString.split(/\|\||;|,\s*/);
+  // Split by || with optional surrounding whitespace
+  var parts = authorString.split(/\s*\|\|\s*/);
   
   for (var i = 0; i < parts.length; i++) {
     var name = parts[i].trim();
@@ -161,14 +160,6 @@ function parseAuthorsSimple(authorString) {
     name = name.split('::')[0].split('###')[0].trim();
     
     authors.push(name);
-    
-    // Check if IITGN (by ::500 suffix or affiliation)
-    var isIITGN = parts[i].indexOf('::500') !== -1 || 
-                  parts[i].toLowerCase().indexOf('iit gandhinagar') !== -1;
-    
-    if (isIITGN) {
-      iitgnAuthors.push(name);
-    }
     
     // NO BOLDING - just add name as-is
     displayParts.push(name);
@@ -185,8 +176,7 @@ function parseAuthorsSimple(authorString) {
   
   return {
     display: display,
-    list: authors,
-    iitgn: iitgnAuthors
+    list: authors
   };
 }
 
