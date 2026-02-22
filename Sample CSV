@@ -1,0 +1,11 @@
+department,author,year,doi,link,dc.language.iso,journal,title,type,openaccess,country
+Computer Science,"Smith, John||Doe, Jane",2024,10.1000/example001,https://example.com/1,en_US,Journal of Computing,A Novel Approach to Machine Learning,Article,gold,USA
+Electrical Engineering,"Johnson, Alice||Brown, Bob",2023,10.1000/example002,https://example.com/2,en_US,IEEE Transactions,Circuit Design for Low Power Devices,Article,hybrid,USA
+Chemistry,"Williams, David||Garcia, Maria",2024,10.1000/example003,https://example.com/3,en_US,Chemical Reviews,Advances in Green Chemistry,Review,gold,UK
+Physics,"Chen, Li||Kumar, Raj||Patel, Priya",2022,10.1000/example004,https://example.com/4,en_US,Physical Review Letters,Quantum Entanglement in Many-Body Systems,Article,close,India
+Mechanical Engineering,"Anderson, Tom",2023,,https://example.com/5,,Proceedings of ASME,Design Optimization of Automotive Components,Conference Paper,open,Germany
+Chemical Engineering,"Martinez, Sofia||Lee, Min",2024,10.1000/example006,https://example.com/6,en_US,Chemical Engineering Science,Catalytic Processes for Sustainable Energy,Article,gold,Spain
+Mathematics,"Wilson, Emma||Taylor, James",2022,,https://example.com/7,en_US,Mathematical Reviews,Topological Methods in Data Analysis,Article,close,Canada
+Biology,"Moore, Sarah||Jackson, Michael",2024,10.1000/example008,https://example.com/8,en_US,Nature Biotechnology,CRISPR Applications in Gene Therapy,Article,gold,Australia
+Materials Science,"Thompson, Rachel||White, Kevin",2023,10.1000/example009,https://example.com/9,en_US,Advanced Materials,Nanomaterials for Energy Storage,Article,hybrid,Japan
+Environmental Science,"Harris, Olivia||Clark, Ethan",2024,,https://example.com/10,en_US,Environmental Science & Technology,Climate Change Impact Assessment,Article,gold,Norway
