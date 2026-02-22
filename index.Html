@@ -2,507 +2,1196 @@
 <html>
 <head>
   <base target="_top">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Badge Scripts -->
+  <script src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
+  <script src='https://badge.dimensions.ai/badge.js' charset='utf-8'></script>
+  
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
     
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
       color: #333;
-      line-height: 1.6;
+    } 
+    
+    .header {
+      background: #5b4be9;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
     }
     
-    .container {
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    
+    /* Full-width search bar */
+    .search-container {
+      background: white;
+      padding: 15px 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .search-bar-fullwidth {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 10px;
+    }
+    
+    .search-bar-fullwidth input[type="text"] {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .search-bar-fullwidth input[type="text"]:focus {
+      outline: none;
+      border-color: #5b4be9;
+    }
+    
+    .search-bar-fullwidth button {
+      padding: 12px 25px;
+      background: #5b4be9;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    /* Main wrapper */
+    .main-wrapper {
+      display: flex;
       max-width: 1400px;
       margin: 0 auto;
-      padding: 20px;
     }
     
-    header {
-      background: linear-gradient(135deg, #1a73e8, #4285f4);
-      color: white;
-      padding: 30px;
-      border-radius: 12px;
-      margin-bottom: 30px;
-    }
-    
-    header h1 {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-    
-    .search-box {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .search-box input {
-      flex: 1;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .search-box button {
-      padding: 14px 30px;
-      background: #ff6f00;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    
-    .search-box button:hover {
-      background: #e65100;
-    }
-    
-    .main-content {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 30px;
-    }
-    
+    /* Sidebar - full height, no scrollbar */
     .sidebar {
+      width: 280px;
+      min-width: 280px;
       background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      height: fit-content;
+      padding: 15px;
+      border-right: 1px solid #ddd;
+      min-height: calc(100vh - 80px);
+      height: auto;
+      overflow-y: visible;
     }
     
+    /* Remove scrollbar but keep functionality */
+    .sidebar::-webkit-scrollbar {
+      width: 0px;
+    }
+    
+    /* Facet sections - expanded by default */
     .facet-section {
-      margin-bottom: 25px;
+      margin-bottom: 5px;
     }
     
-    .facet-title {
-      font-weight: 600;
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 12px;
+    .facet-header {
+      background: #f8f8f8;
+      padding: 10px 12px;
+      cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 4px;
+      margin: 0;
+      border: none;
+    }
+    
+    .facet-header:hover {
+      background: #f0f0f0;
     }
     
     .facet-content {
-      max-height: 250px;
-      overflow-y: auto;
+      padding: 10px 5px;
     }
     
-    .facet-item {
+    .facet-content.collapsed {
+      display: none;
+    }
+    
+    .facet-toggle {
+      font-size: 12px;
+      transition: transform 0.2s;
+      transform: rotate(0deg);
+    }
+    
+    .facet-toggle.collapsed {
+      transform: rotate(-90deg);
+    }
+    
+    .facet-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .facet-list li {
+      padding: 4px 0;
+    }
+    
+    .facet-list label {
       display: flex;
       align-items: center;
-      padding: 8px 10px;
-      border-radius: 6px;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-    
-    .facet-item:hover {
-      background: #f0f4f8;
-    }
-    
-    .facet-item.active {
-      background: #e3f2fd;
-    }
-    
-    .facet-item input {
-      margin-right: 10px;
-    }
-    
-    .facet-item span {
-      flex: 1;
       font-size: 13px;
     }
     
-    .facet-item .count {
-      color: #888;
+    .facet-list input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    
+    .facet-name {
+      flex: 1;
+    }
+    
+    .facet-count {
+      color: #666;
       font-size: 12px;
     }
     
-    .results-section {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    .view-all-btn {
+      width: 100%;
+      padding: 8px;
+      background: #f0f0f0;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 8px;
+      border-radius: 4px;
     }
     
+    /* HR between facets */
+    .facet-hr {
+      border: 1px solid #5b4be9;
+      margin: 15px 0;
+      opacity: 0.5;
+    }
+    
+    .facet-spacer {
+      height: 10px;
+    }
+    
+    /* Content area */
+    .content {
+      flex: 1;
+      padding: 20px;
+      min-width: 0;
+    }
+    
+    /* Results info and per page */
     .results-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #eee;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     
     .results-info {
-      font-size: 15px;
+      font-size: 14px;
       color: #666;
     }
     
-    .results-info strong {
-      color: #333;
-    }
-    
-    .results-list {
+    .per-page-selector {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      align-items: center;
+      gap: 8px;
     }
     
-    .result-card {
-      padding: 20px;
-      border: 1px solid #eee;
-      border-radius: 10px;
-      transition: box-shadow 0.2s;
-    }
-    
-    .result-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    
-    .result-title {
-      font-size: 17px;
-      font-weight: 600;
-      color: #1a73e8;
-      text-decoration: none;
-      margin-bottom: 8px;
-      display: block;
-    }
-    
-    .result-title:hover {
-      text-decoration: underline;
-    }
-    
-    .result-authors {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 10px;
-    }
-    
-    .result-authors strong {
-      color: #1a73e8;
-    }
-    
-    .result-meta {
+    .per-page-selector select {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
       font-size: 13px;
-      color: #888;
+    }
+    
+    /* Active filters */
+    .active-filters {
+      margin-bottom: 15px;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
       display: flex;
       flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .filter-tag {
+      display: inline-block;
+      background: #e8e8ff;
+      color: #5b4be9;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .filter-tag a {
+      color: #5b4be9;
+      text-decoration: none;
+      margin-left: 5px;
+      font-weight: bold;
+    }
+    
+    .clear-all {
+      color: red;
+      font-size: 12px;
+      margin-left: auto;
+    }
+    
+    /* Publication cards */
+    .card {
+      background: white;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex;
       gap: 15px;
     }
     
-    .result-meta span {
-      display: flex;
-      align-items: center;
-      gap: 5px;
+    .entry-id {
+      font-size: 14px;
+      color: #999;
+      min-width: 30px;
     }
     
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #666;
+    .card .content {
+      flex: 1;
+      padding: 0;
     }
     
-    .error {
-      background: #ffebee;
-      color: #c62828;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #005596;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 8px;
     }
     
-    .clear-filters {
-      color: #c62828;
-      font-size: 13px;
-      cursor: pointer;
+    .card-title:hover {
       text-decoration: underline;
     }
     
-    @media (max-width: 900px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
+    .card-authors {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .meta-info {
+      flex: 1;
+    }
+    
+    .card-meta {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    .card-meta a {
+      color: #005596;
+      text-decoration: none;
+    }
+    
+    .card-meta a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Badges */
+    .content-badges {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .metrics-badge-line {
+      display: flex;
+      gap: 10px;
+    }
+    
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      margin-top: 25px;
+    }
+    
+    .pagination button {
+      padding: 8px 12px;
+      background: white;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    .pagination button:hover:not(:disabled) {
+      background: #f0f0f0;
+    }
+    
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .current-page {
+      padding: 8px 12px;
+      background: #5b4be9;
+      color: white;
+      border-radius: 4px;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+    
+    .close-modal {
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .modal-facet-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .modal-facet-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .modal-facet-list label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .modal-facet-list input[type="checkbox"] {
+      margin-right: 10px;
+    }
+    
+    /* Loading overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.9);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #5b4be9;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🎓 CRIS Publication Portal</h1>
-      <p>Search publications from our institution repository</p>
-      <div class="search-box">
-        <input type="text" id="searchQuery" placeholder="Search publications..." onkeypress="handleKeyPress(event)">
-        <button onclick="performSearch()">Search</button>
-      </div>
-    </header>
-    
-    <div class="main-content">
-      <aside class="sidebar">
-        <div id="facets">
-          <div class="loading">Loading facets...</div>
-        </div>
-      </aside>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <div class="header">
+    <h1>Research Publication</h1>
+  </div>
+  
+  <!-- Full-width Search Bar -->
+  <div class="search-container">
+    <form class="search-bar-fullwidth" onsubmit="event.preventDefault(); handleSearch();">
+      <input type="text" id="searchInput" placeholder="Search publications by title...">
+      <button type="submit">SEARCH</button>
+    </form>
+  </div>
+  
+  <div class="main-wrapper">
+    <!-- Sidebar with Facets - Full Height -->
+    <aside class="sidebar">
       
-      <main class="results-section">
-        <div class="results-header">
-          <div class="results-info" id="resultsInfo">
-            Loading publications...
-          </div>
-          <div>
-            <span class="clear-filters" onclick="clearAllFilters()">Clear All Filters</span>
-          </div>
+      <!-- Year Facet (without histogram) -->
+      <div class="facet-section">
+        <div class="facet-header" onclick="toggleFacet('year')">
+          <span>Year</span>
+          <span class="facet-toggle" id="toggle-year">▼</span>
         </div>
-        
-        <div id="results" class="results-list">
-          <div class="loading">Loading publications...</div>
+        <div class="facet-content" id="facet-year"></div>
+      </div>
+      
+      <hr class="facet-hr">
+      <div class="facet-spacer"></div>
+      
+      <!-- Type Facet -->
+      <div class="facet-section">
+        <div class="facet-header" onclick="toggleFacet('type')">
+          <span>Publication Type</span>
+          <span class="facet-toggle" id="toggle-type">▼</span>
         </div>
-      </main>
+        <div class="facet-content" id="facet-type"></div>
+      </div>
+      
+      <hr class="facet-hr">
+      <div class="facet-spacer"></div>
+      
+      <!-- Department Facet -->
+      <div class="facet-section">
+        <div class="facet-header" onclick="toggleFacet('department')">
+          <span>Department</span>
+          <span class="facet-toggle" id="toggle-department">▼</span>
+        </div>
+        <div class="facet-content" id="facet-department"></div>
+      </div>
+      
+      <hr class="facet-hr">
+      <div class="facet-spacer"></div>
+      
+      <!-- Author Facet -->
+      <div class="facet-section">
+        <div class="facet-header" onclick="toggleFacet('author')">
+          <span>Author</span>
+          <span class="facet-toggle" id="toggle-author">▼</span>
+        </div>
+        <div class="facet-content" id="facet-author"></div>
+      </div>
+      
+      <hr class="facet-hr">
+      <div class="facet-spacer"></div>
+      
+      <!-- Source Facet -->
+      <div class="facet-section">
+        <div class="facet-header" onclick="toggleFacet('source')">
+          <span>Source Title</span>
+          <span class="facet-toggle" id="toggle-source">▼</span>
+        </div>
+        <div class="facet-content" id="facet-source"></div>
+      </div>
+      
+      <hr class="facet-hr">
+      <div class="facet-spacer"></div>
+      
+      <!-- Country Facet -->
+      <div class="facet-section">
+        <div class="facet-header" onclick="toggleFacet('country')">
+          <span>Country</span>
+          <span class="facet-toggle" id="toggle-country">▼</span>
+        </div>
+        <div class="facet-content" id="facet-country"></div>
+      </div>
+      
+      <hr class="facet-hr">
+      <div class="facet-spacer"></div>
+      
+      <!-- Open Access Facet -->
+      <div class="facet-section">
+        <div class="facet-header" onclick="toggleFacet('openaccess')">
+          <span>Open Access</span>
+          <span class="facet-toggle" id="toggle-openaccess">▼</span>
+        </div>
+        <div class="facet-content" id="facet-openaccess"></div>
+      </div>
+      
+    </aside>
+    
+    <!-- Content Area -->
+    <main class="content">
+      
+      <!-- Active Filters -->
+      <div class="active-filters" id="activeFilters"></div>
+      
+      <!-- Results Header with Per Page -->
+      <div class="results-header">
+        <div class="results-info" id="resultsInfo"></div>
+        <div class="per-page-selector">
+          <label>Results per page:</label>
+          <select id="perPageSelect" onchange="changePerPage(this.value)">
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="500">500</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Results List -->
+      <div id="results"></div>
+      
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+      
+    </main>
+  </div>
+  
+  <!-- Modal for View All -->
+  <div id="facetModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">View All</h2>
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+      </div>
+      <ul class="modal-facet-list" id="modalList"></ul>
     </div>
   </div>
   
   <script>
-    // State
-    let currentData = null;
-    let filters = {
-      query: '',
-      authors: [],
-      years: [],
-      types: [],
-      departments: []
+    // Global data
+    var allPublications = [];
+    var filteredPublications = [];
+    var facets = {};
+    var currentFilters = {
+      q: '',
+      source: [],
+      department: [],
+      author: [],
+      year: [],
+      type: [],
+      openaccess: [],
+      country: []
+    };
+    var currentPage = 1;
+    var perPage = 25;
+    var currentModalFacet = '';
+    var dataLoaded = false;
+    
+    // Initialize - show loading until data is ready
+    window.onload = function() {
+      showLoading();
+      loadData();
     };
     
-    // Initialize
-    google.script.run.withSuccessHandler(onDataLoaded).getPublications(filters);
-    
-    function onDataLoaded(data) {
-      currentData = data;
-      renderFacets(data.facets);
-      renderResults(data.results);
-      document.getElementById('resultsInfo').innerHTML = 
-        'Showing <strong>1-' + data.results.length + '</strong> of <strong>' + data.total + '</strong> publications';
+    // Show loading
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
     }
     
-    function renderFacets(facets) {
-      let html = '';
-      
-      // Authors facet (Institution only)
-      const authors = Object.keys(facets.authors).slice(0, 50);
-      if (authors.length > 0) {
-        html += '<div class="facet-section">';
-        html += '<div class="facet-title">Author (Institution)</div>';
-        html += '<div class="facet-content">';
-        for (let i = 0; i < authors.length; i++) {
-          const author = authors[i];
-          const active = filters.authors.indexOf(author) !== -1 ? 'active' : '';
-          html += '<label class="facet-item ' + active + '">';
-          html += '<input type="checkbox" onchange="toggleAuthor(\'' + author + '\')" ' + (active ? 'checked' : '') + '>';
-          html += '<span>' + author + '</span>';
-          html += '<span class="count">' + facets.authors[author] + '</span>';
-          html += '</label>';
-        }
-        html += '</div></div>';
-      }
-      
-      // Years facet
-      const years = Object.keys(facets.years).slice(0, 30);
-      if (years.length > 0) {
-        html += '<div class="facet-section">';
-        html += '<div class="facet-title">Year</div>';
-        html += '<div class="facet-content">';
-        for (let i = 0; i < years.length; i++) {
-          const year = years[i];
-          const active = filters.years.indexOf(year) !== -1 ? 'active' : '';
-          html += '<label class="facet-item ' + active + '">';
-          html += '<input type="checkbox" onchange="toggleYear(\'' + year + '\')" ' + (active ? 'checked' : '') + '>';
-          html += '<span>' + year + '</span>';
-          html += '<span class="count">' + facets.years[year] + '</span>';
-          html += '</label>';
-        }
-        html += '</div></div>';
-      }
-      
-      // Types facet
-      const types = Object.keys(facets.types).slice(0, 20);
-      if (types.length > 0) {
-        html += '<div class="facet-section">';
-        html += '<div class="facet-title">Type</div>';
-        html += '<div class="facet-content">';
-        for (let i = 0; i < types.length; i++) {
-          const type = types[i];
-          const active = filters.types.indexOf(type) !== -1 ? 'active' : '';
-          html += '<label class="facet-item ' + active + '">';
-          html += '<input type="checkbox" onchange="toggleType(\'' + type + '\')" ' + (active ? 'checked' : '') + '>';
-          html += '<span>' + type + '</span>';
-          html += '<span class="count">' + facets.types[type] + '</span>';
-          html += '</label>';
-        }
-        html += '</div></div>';
-      }
-      
-      // Departments facet
-      const departments = Object.keys(facets.departments).slice(0, 20);
-      if (departments.length > 0) {
-        html += '<div class="facet-section">';
-        html += '<div class="facet-title">Department</div>';
-        html += '<div class="facet-content">';
-        for (let i = 0; i < departments.length; i++) {
-          const dept = departments[i];
-          const active = filters.departments.indexOf(dept) !== -1 ? 'active' : '';
-          html += '<label class="facet-item ' + active + '">';
-          html += '<input type="checkbox" onchange="toggleDepartment(\'' + dept + '\')" ' + (active ? 'checked' : '') + '>';
-          html += '<span>' + dept + '</span>';
-          html += '<span class="count">' + facets.departments[dept] + '</span>';
-          html += '</label>';
-        }
-        html += '</div></div>';
-      }
-      
-      document.getElementById('facets').innerHTML = html || '<p style="color:#888;">No facets available</p>';
+    // Hide loading
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
     }
     
-    function renderResults(results) {
-      if (!results || results.length === 0) {
-        document.getElementById('results').innerHTML = '<div class="loading">No publications found</div>';
+    // Load data from server
+    function loadData() {
+      showLoading();
+      document.getElementById('results').innerHTML = '<p>Loading publications...</p>';
+      
+      google.script.run
+        .withSuccessHandler(function(response) {
+          hideLoading();
+          
+          // Check for error
+          if (!response || response.error) {
+            document.getElementById('results').innerHTML = '<p>Error: ' + (response ? response.error : 'No response') + '</p>';
+            return;
+          }
+          
+          // Store all publications for filtering
+          allPublications = response.publications || [];
+          facets = response.facets || {};
+          filteredPublications = allPublications;
+          dataLoaded = true;
+          
+          renderFacets();
+          applyFilters();
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          document.getElementById('results').innerHTML = '<p>Error loading data: ' + error.message + '</p>';
+        })
+        .getAllPublicationsWithFacets();
+    }
+    
+    // Toggle facet section - check if collapsed class exists
+    function toggleFacet(type) {
+      var content = document.getElementById('facet-' + type);
+      var toggle = document.getElementById('toggle-' + type);
+      
+      // Check if content has collapsed class
+      if (content.classList.contains('collapsed')) {
+        content.classList.remove('collapsed');
+        toggle.classList.remove('collapsed');
+      } else {
+        content.classList.add('collapsed');
+        toggle.classList.add('collapsed');
+      }
+    }
+    
+    // Render year facet (simple list)
+    function renderYearFacet() {
+      renderFacetItems('year', facets.years, 'year', 5);
+    }
+    
+    // Render facets - show only 5 by default
+    function renderFacets() {
+      renderFacetItems('year', facets.years, 'year', 5);
+      renderFacetItems('type', facets.types, 'type', 5);
+      renderFacetItems('department', facets.departments, 'department', 5);
+      renderFacetItems('author', facets.authors, 'author', 5);
+      renderFacetItems('source', facets.sources, 'source', 5);
+      renderFacetItems('country', facets.countries, 'country', 5);
+      renderFacetItems('openaccess', facets.openaccess, 'openaccess', 5);
+    }
+    
+    // Render facet items with limit
+    function renderFacetItems(type, items, filterKey, limit) {
+      var container = document.getElementById('facet-' + type);
+      if (!container) return;
+      
+      if (!items || items.length === 0) {
+        container.innerHTML = '<p style="color:#999;padding:10px;font-size:12px;">No ' + type + ' available</p>';
         return;
       }
       
-      let html = '';
-      for (let i = 0; i < results.length; i++) {
-        const pub = results[i];
+      var displayItems = items.slice(0, limit);
+      var html = '<ul class="facet-list">';
+      
+      for (var i = 0; i < displayItems.length; i++) {
+        var item = displayItems[i];
+        var isChecked = currentFilters[filterKey].indexOf(item.name) !== -1;
+        html += '<li>';
+        html += '<label>';
+        html += '<input type="checkbox" ' + (isChecked ? 'checked' : '') + 
+                ' onchange="toggleFilter(\'' + filterKey + '\', \'' + escapeHtml(item.name) + '\')">';
+        html += '<span class="facet-name">' + escapeHtml(item.name) + '</span>';
+        html += '<span class="facet-count">(' + item.count + ')</span>';
+        html += '</label>';
+        html += '</li>';
+      }
+      html += '</ul>';
+      
+      if (items.length > limit) {
+        html += '<button class="view-all-btn" onclick="openFacetModal(\'' + type + '\')">View All</button>';
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    // Open facet modal
+    function openFacetModal(type) {
+      currentModalFacet = type;
+      var items = facets[type + 's'] || [];
+      var filterKey = type;
+      
+      // Special handling for year
+      if (type === 'year') {
+        items = facets.years || [];
+      }
+      
+      document.getElementById('modalTitle').innerText = 'Select ' + type;
+      
+      var html = '';
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var isChecked = currentFilters[filterKey].indexOf(item.name) !== -1;
+        html += '<li>';
+        html += '<label>';
+        html += '<input type="checkbox" class="modal-checkbox" data-filter="' + filterKey + '" data-value="' + escapeHtml(String(item.name)) + '" ' + (isChecked ? 'checked' : '') + '>';
+        html += '<span class="facet-name">' + escapeHtml(String(item.name)) + '</span>';
+        html += '<span class="facet-count">(' + item.count + ')</span>';
+        html += '</label>';
+        html += '</li>';
+      }
+      
+      // Add Apply Filter button
+      html += '<li style="border:none; padding-top:15px;">';
+      html += '<button onclick="applyModalFilters()" style="width:100%; padding:10px; background:#5b4be9; color:white; border:none; border-radius:4px; cursor:pointer; font-size:14px;">Apply Filter</button>';
+      html += '</li>';
+      
+      document.getElementById('modalList').innerHTML = html;
+      document.getElementById('facetModal').style.display = 'block';
+    }
+    
+    // Apply filters from modal
+    function applyModalFilters() {
+      var checkboxes = document.querySelectorAll('.modal-checkbox:checked');
+      var filterKey = currentModalFacet;
+      
+      var newValues = [];
+      checkboxes.forEach(function(cb) {
+        newValues.push(cb.getAttribute('data-value'));
+      });
+      
+      currentFilters[filterKey] = newValues;
+      
+      closeModal();
+    }
+    
+    // Handle search - client-side
+    function handleSearch() {
+      var query = document.getElementById('searchInput').value;
+      currentFilters.q = query;
+      currentPage = 1;
+      applyFilters();
+    }
+    
+    // Toggle filter - client-side
+    function toggleFilter(filterKey, value) {
+      var index = currentFilters[filterKey].indexOf(value);
+      
+      if (index === -1) {
+        currentFilters[filterKey].push(value);
+      } else {
+        currentFilters[filterKey].splice(index, 1);
+      }
+      
+      // Re-render facets and apply client-side filter
+      renderFacets();
+      currentPage = 1;
+      applyFilters();
+    }
+    
+    // Close modal - use client-side filter
+    function closeModal() {
+      document.getElementById('facetModal').style.display = 'none';
+      renderFacets();
+      currentPage = 1;
+      applyFilters();
+    }
+    
+    // Change per page
+    function changePerPage(value) {
+      perPage = parseInt(value);
+      currentPage = 1;
+      renderResults();
+    }
+    
+    // Apply filters
+    function applyFilters() {
+      if (!dataLoaded) return;
+      
+      var query = currentFilters.q.toLowerCase();
+      
+      filteredPublications = allPublications.filter(function(pub) {
+        if (query) {
+          // Search only in title
+          if (pub.title.toLowerCase().indexOf(query) === -1) {
+            return false;
+          }
+        }
         
-        // Format authors - Institution first (bold), then others
-        let authorsHtml = formatAuthors(pub.authors);
+        if (currentFilters.source.length > 0) {
+          if (currentFilters.source.indexOf(pub.source) === -1) {
+            return false;
+          }
+        }
         
-        html += '<div class="result-card">';
-        html += '<a href="' + (pub.uri || '#') + '" target="_blank" class="result-title">' + pub.title + '</a>';
-        html += '<div class="result-authors">' + authorsHtml + '</div>';
-        html += '<div class="result-meta">';
-        if (pub.year) html += '<span>📅 ' + pub.year + '</span>';
-        if (pub.type) html += '<span>📄 ' + pub.type.split('||')[0] + '</span>';
-        if (pub.department) html += '<span>🏛️ ' + pub.department + '</span>';
-        if (pub.doi) html += '<span>🔗 DOI: ' + pub.doi + '</span>';
-        if (pub.openAccess) html += '<span>🔓 Open Access</span>';
-        html += '</div></div>';
+        if (currentFilters.department.length > 0) {
+          var deptMatch = false;
+          for (var i = 0; i < pub.deptList.length; i++) {
+            if (currentFilters.department.indexOf(pub.deptList[i]) !== -1) {
+              deptMatch = true;
+              break;
+            }
+          }
+          if (!deptMatch) return false;
+        }
+        
+        if (currentFilters.author.length > 0) {
+          var authorMatch = false;
+          for (var i = 0; i < pub.authorList.length; i++) {
+            if (currentFilters.author.indexOf(pub.authorList[i]) !== -1) {
+              authorMatch = true;
+              break;
+            }
+          }
+          if (!authorMatch) return false;
+        }
+        
+        if (currentFilters.year.length > 0) {
+          if (currentFilters.year.indexOf(pub.year) === -1) {
+            return false;
+          }
+        }
+        
+        if (currentFilters.type.length > 0) {
+          if (currentFilters.type.indexOf(pub.type) === -1) {
+            return false;
+          }
+        }
+        
+        if (currentFilters.openaccess.length > 0) {
+          if (currentFilters.openaccess.indexOf(pub.openaccess) === -1) {
+            return false;
+          }
+        }
+        
+        if (currentFilters.country.length > 0) {
+          if (currentFilters.country.indexOf(pub.country) === -1) {
+            return false;
+          }
+        }
+        
+        return true;
+      });
+      
+      renderResults();
+      renderActiveFilters();
+      
+      // Recalculate facets from filtered results for dynamic facet counts
+      facets = calculateDynamicFacets(filteredPublications);
+      renderFacets();
+    }
+    
+    // Calculate dynamic facets from filtered results
+    function calculateDynamicFacets(publications) {
+      var dynamicFacets = {
+        authors: {},
+        departments: {},
+        types: {},
+        years: {},
+        sources: {},
+        openaccess: {},
+        countries: {}
+      };
+      
+      for (var i = 0; i < publications.length; i++) {
+        var pub = publications[i];
+        
+        // Authors
+        if (pub.authorList) {
+          for (var j = 0; j < pub.authorList.length; j++) {
+            var author = pub.authorList[j];
+            if (author) {
+              dynamicFacets.authors[author] = (dynamicFacets.authors[author] || 0) + 1;
+            }
+          }
+        }
+        
+        // Departments
+        if (pub.deptList) {
+          for (var j = 0; j < pub.deptList.length; j++) {
+            var dept = pub.deptList[j];
+            dynamicFacets.departments[dept] = (dynamicFacets.departments[dept] || 0) + 1;
+          }
+        }
+        
+        // Types
+        if (pub.type) {
+          dynamicFacets.types[pub.type] = (dynamicFacets.types[pub.type] || 0) + 1;
+        }
+        
+        // Years
+        if (pub.year && pub.year !== 'N/A') {
+          dynamicFacets.years[pub.year] = (dynamicFacets.years[pub.year] || 0) + 1;
+        }
+        
+        // Sources
+        if (pub.source) {
+          dynamicFacets.sources[pub.source] = (dynamicFacets.sources[pub.source] || 0) + 1;
+        }
+        
+        // Open Access
+        if (pub.openaccess) {
+          dynamicFacets.openaccess[pub.openaccess] = (dynamicFacets.openaccess[pub.openaccess] || 0) + 1;
+        }
+        
+        // Countries
+        if (pub.country) {
+          dynamicFacets.countries[pub.country] = (dynamicFacets.countries[pub.country] || 0) + 1;
+        }
+      }
+      
+      // Sort by count descending
+      dynamicFacets.authors = sortByCount(dynamicFacets.authors);
+      dynamicFacets.departments = sortByCount(dynamicFacets.departments);
+      dynamicFacets.types = sortByCount(dynamicFacets.types);
+      dynamicFacets.years = sortByCount(dynamicFacets.years);
+      dynamicFacets.sources = sortByCount(dynamicFacets.sources);
+      dynamicFacets.openaccess = sortByCount(dynamicFacets.openaccess);
+      dynamicFacets.countries = sortByCount(dynamicFacets.countries);
+      
+      return dynamicFacets;
+    }
+    
+    // Sort object by count
+    function sortByCount(obj) {
+      var sorted = [];
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          sorted.push({ name: key, count: obj[key] });
+        }
+      }
+      sorted.sort(function(a, b) { return b.count - a.count; });
+      return sorted;
+    }
+    
+    // Render results
+    function renderResults() {
+      var start = (currentPage - 1) * perPage;
+      var end = start + perPage;
+      var pageResults = filteredPublications.slice(start, end);
+      
+      document.getElementById('resultsInfo').innerHTML = 
+        'Showing ' + (start + 1) + '-' + Math.min(end, filteredPublications.length) + 
+        ' of ' + filteredPublications.length + ' publications';
+      
+      if (pageResults.length === 0) {
+        document.getElementById('results').innerHTML = '<p>No publications found.</p>';
+        return;
+      }
+      
+      var html = '';
+      for (var i = 0; i < pageResults.length; i++) {
+        var pub = pageResults[i];
+        
+        html += '<div class="card">';
+        html += '<div class="entry-id">' + (start + i + 1) + '</div>';
+        html += '<div class="content">';
+        
+        if (pub.link) {
+          html += '<a href="' + escapeHtml(pub.link) + '" target="_blank" class="card-title">' + 
+                  escapeHtml(pub.title) + '</a>';
+        } else {
+          html += '<div class="card-title">' + escapeHtml(pub.title) + '</div>';
+        }
+        
+        html += '<div class="card-authors">' + escapeHtml(pub.authors) + '</div>';
+        
+        html += '<div class="meta-row">';
+        html += '<div class="meta-info">';
+        html += '<div class="card-meta"><strong>Year:</strong> ' + escapeHtml(pub.year) + ' | <strong>Type:</strong> ' + escapeHtml(pub.type) + ' | <strong>Department:</strong> ' + escapeHtml(pub.department) + '</div>';
+        
+        if (pub.journal) {
+          html += '<div class="card-meta"><strong>Journal:</strong> ' + escapeHtml(pub.journal) + '</div>';
+        }
+        
+        if (pub.doi) {
+          html += '<div class="card-meta"><strong>DOI:</strong> <a href="https://doi.org/' + escapeHtml(pub.doi) + '" target="_blank">' + escapeHtml(pub.doi) + '</a></div>';
+        }
+        
+        html += '</div>';
+        
+        if (pub.doi) {
+          html += '<div class="content-badges">';
+          html += '<span class="metrics-badge-line" id="badge-line-' + i + '">';
+          html += '<div data-badge-type="donut" class="altmetric-embed" data-badge-popover="left" data-hide-no-mentions="true" data-doi="' + escapeHtml(pub.doi) + '"></div>';
+          html += '<span class="__dimensions_badge_embed__" data-doi="' + escapeHtml(pub.doi) + '" data-hide-zero-citations="true" data-style="small_circle"></span>';
+          html += '<span class="plumx-details-badge" data-badge="true" data-doi="' + escapeHtml(pub.doi) + '"></span>';
+          html += '</span>';
+          html += '</div>';
+        }
+        
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
       }
       
       document.getElementById('results').innerHTML = html;
+      renderPagination();
     }
     
-    function formatAuthors(authorsStr) {
-      if (!authorsStr) return '';
+    // Render active filters
+    function renderActiveFilters() {
+      var html = '';
+      var hasFilters = false;
       
-      const authors = authorsStr.split('||').map(function(a) { return a.trim(); });
-      const inst = [];
-      const others = [];
+      var filterTypes = [
+        { key: 'source', label: 'Source' },
+        { key: 'department', label: 'Dept' },
+        { key: 'author', label: 'Author' },
+        { key: 'year', label: 'Year' },
+        { key: 'type', label: 'Type' },
+        { key: 'openaccess', label: 'Open Access' },
+        { key: 'country', label: 'Country' }
+      ];
       
-      for (let i = 0; i < authors.length; i++) {
-        if (authors[i].indexOf('::500') !== -1) {
-          inst.push(authors[i].split('::')[0].trim());
-        } else {
-          others.push(authors[i]);
+      for (var f = 0; f < filterTypes.length; f++) {
+        var filterKey = filterTypes[f].key;
+        var label = filterTypes[f].label;
+        
+        for (var i = 0; i < currentFilters[filterKey].length; i++) {
+          html += '<span class="filter-tag">' + label + ': ' + escapeHtml(currentFilters[filterKey][i]) + 
+                  ' <a href="#" onclick="removeFilter(\'' + filterKey + '\', \'' + escapeHtml(currentFilters[filterKey][i]) + '\'); return false;">×</a></span>';
+          hasFilters = true;
         }
       }
       
-      let html = '';
-      if (inst.length > 0) {
-        html += inst.map(function(a) { return '<strong>' + a + '</strong>'; }).join('; ');
-        if (others.length > 0) {
-          html += '; ' + others.join('; ');
-        }
-        html += ' et al.';
-      } else {
-        if (authors.length > 2) {
-          html = authors.slice(0, 2).join('; ') + ' et al.';
-        } else {
-          html = authors.join('; ');
-        }
+      if (hasFilters) {
+        html += '<a href="#" onclick="clearAllFilters(); return false;" class="clear-all">Clear All</a>';
       }
       
-      return html;
+      document.getElementById('activeFilters').innerHTML = html;
     }
     
-    // Filter functions
-    function performSearch() {
-      filters.query = document.getElementById('searchQuery').value;
+    // Remove filter
+    function removeFilter(filterKey, value) {
+      var index = currentFilters[filterKey].indexOf(value);
+      if (index !== -1) {
+        currentFilters[filterKey].splice(index, 1);
+      }
+      currentPage = 1;
+      
       applyFilters();
     }
     
-    function handleKeyPress(event) {
-      if (event.key === 'Enter') {
-        performSearch();
-      }
-    }
-    
-    function toggleAuthor(author) {
-      const idx = filters.authors.indexOf(author);
-      if (idx === -1) {
-        filters.authors.push(author);
-      } else {
-        filters.authors.splice(idx, 1);
-      }
-      applyFilters();
-    }
-    
-    function toggleYear(year) {
-      const idx = filters.years.indexOf(year);
-      if (idx === -1) {
-        filters.years.push(year);
-      } else {
-        filters.years.splice(idx, 1);
-      }
-      applyFilters();
-    }
-    
-    function toggleType(type) {
-      const idx = filters.types.indexOf(type);
-      if (idx === -1) {
-        filters.types.push(type);
-      } else {
-        filters.types.splice(idx, 1);
-      }
-      applyFilters();
-    }
-    
-    function toggleDepartment(dept) {
-      const idx = filters.departments.indexOf(dept);
-      if (idx === -1) {
-        filters.departments.push(dept);
-      } else {
-        filters.departments.splice(idx, 1);
-      }
-      applyFilters();
-    }
-    
+    // Clear all filters
     function clearAllFilters() {
-      filters = {
-        query: '',
-        authors: [],
-        years: [],
-        types: [],
-        departments: []
+      currentFilters = {
+        q: '',
+        source: [],
+        department: [],
+        author: [],
+        year: [],
+        type: [],
+        openaccess: [],
+        country: []
       };
-      document.getElementById('searchQuery').value = '';
+      document.getElementById('searchInput').value = '';
+      currentPage = 1;
       applyFilters();
     }
     
-    function applyFilters() {
-      document.getElementById('results').innerHTML = '<div class="loading">Loading...</div>';
-      google.script.run.withSuccessHandler(onDataLoaded).getPublications(filters);
+    // Render pagination - max 5 pages with Next/Previous
+    function renderPagination() {
+      var totalPages = Math.ceil(filteredPublications.length / perPage);
+      
+      // Hide pagination if no data or only 1 page
+      if (totalPages <= 1 || filteredPublications.length === 0) {
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+      
+      var html = '';
+      
+      // Previous button
+      html += '<button onclick="goToPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>Previous</button>';
+      
+      // Calculate page range (show up to 5 pages)
+      var startPage = Math.max(1, currentPage - 2);
+      var endPage = Math.min(totalPages, startPage + 4);
+      
+      // Adjust start if we're near the end
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+      
+      // First page if not in range
+      if (startPage > 1) {
+        html += '<button onclick="goToPage(1)">1</button>';
+        if (startPage > 2) {
+          html += '<span style="padding:8px;">...</span>';
+        }
+      }
+      
+      // Page numbers
+      for (var i = startPage; i <= endPage; i++) {
+        if (i === currentPage) {
+          html += '<span class="current-page">' + i + '</span>';
+        } else {
+          html += '<button onclick="goToPage(' + i + ')">' + i + '</button>';
+        }
+      }
+      
+      // Last page if not in range
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          html += '<span style="padding:8px;">...</span>';
+        }
+        html += '<button onclick="goToPage(' + totalPages + ')">' + totalPages + '</button>';
+      }
+      
+      // Next button
+      html += '<button onclick="goToPage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>Next</button>';
+      
+      document.getElementById('pagination').innerHTML = html;
+    }
+    
+    // Go to page
+    function goToPage(page) {
+      currentPage = page;
+      renderResults();
+      window.scrollTo(0, 0);
+    }
+    
+    // Escape HTML
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&')
+        .replace(/</g, '<')
+        .replace(/>/g, '>')
+        .replace(/"/g, '"')
+        .replace(/'/g, '&#039;');
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      var modal = document.getElementById('facetModal');
+      if (event.target == modal) {
+        closeModal();
+      }
     }
   </script>
 </body>
