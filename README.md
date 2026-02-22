@@ -1,4 +1,4 @@
-# CRIS Publication Portal - Google Apps Script
+# Institution Publication Portal - Google Apps Script
 
 A faceted search web application for publication data stored in CSV format. Built with Google Apps Script (HTML Service).
 
