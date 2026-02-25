@@ -1,11 +1,11 @@
 /**
  * Google Apps Script - Server Side Code
  * Publication Viewer with Google Sheets data
- * 
+ *
 
 // ============ CONFIGURATION - UPDATE THIS SPREADSHEET ID ============
 // Get ID from your Google Sheet URL: docs.google.com/spreadsheets/d/THIS_PART/edit
-var SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
+var SPREADSHEET_ID = '1jfq1489i6bG_HwFBK19ag3P6d_hLHuMZgsM-ylqITHI';
 
 // Field mapping - column names in your Google Sheet
 var FIELD_MAPPING = {
@@ -23,6 +23,204 @@ var FIELD_MAPPING = {
 };
 
 // =========================================================
+
+// =========================================================
+// PERFORMANCE TRACKING CONFIGURATION
+// =========================================================
+
+// Google Sheet ID for logging performance metrics
+// Get ID from your Google Sheet URL: docs.google.com/spreadsheets/d/THIS_PART/edit
+var PERFORMANCE_LOG_SHEET_ID = '1jfq1489i6bG_HwFBK19ag3P6d_hLHuMZgsM-ylqITHI';
+
+// Cache for performance timing on server-side
+var _serverStartTime = null;
+
+/**
+ * Start server-side timing
+ */
+function startServerTiming() {
+  _serverStartTime = new Date().getTime();
+  return _serverStartTime;
+}
+
+/**
+ * End server-side timing and return duration
+ */
+function endServerTiming() {
+  if (!_serverStartTime) return 0;
+  var duration = new Date().getTime() - _serverStartTime;
+  _serverStartTime = null;
+  return duration;
+}
+
+/**
+ * Log performance metrics to Google Sheets (non-blocking)
+ * This function runs asynchronously and doesn't block the main script
+ */
+function logPerformanceMetrics(metrics) {
+  if (!PERFORMANCE_LOG_SHEET_ID || PERFORMANCE_LOG_SHEET_ID.indexOf('YOUR_') !== -1) {
+    Logger.log('Performance metrics (not logged to sheet): ' + JSON.stringify(metrics));
+    return;
+  }
+  
+  try {
+    var spreadsheet = SpreadsheetApp.openById(PERFORMANCE_LOG_SHEET_ID);
+    var sheet = spreadsheet.getSheetByName('PerformanceLog');
+    
+    // Create sheet if it doesn't exist
+    if (!sheet) {
+      sheet = spreadsheet.insertSheet('PerformanceLog');
+      // Add headers
+      sheet.appendRow(['Timestamp', 'Event Type', 'Duration (ms)', 'Cache Status', 'Data Size', 'Additional Info', 'Session ID']);
+    }
+    
+    // Prepare row data
+    var row = [
+      new Date(),
+      metrics.eventType || 'unknown',
+      metrics.duration || 0,
+      metrics.cacheStatus || 'unknown',
+      metrics.dataSize || 0,
+      metrics.additionalInfo || '',
+      metrics.sessionId || ''
+    ];
+    
+    sheet.appendRow(row);
+    
+  } catch (e) {
+    Logger.log('Error logging performance: ' + e.message);
+  }
+}
+
+/**
+ * Log performance metrics asynchronously (fire-and-forget)
+ * Use this for non-blocking logging from client-side
+ */
+function logPerformanceAsync(metrics) {
+  // This function is called from client-side
+  // It runs in the background without blocking
+  logPerformanceMetrics(metrics);
+}
+
+/**
+ * Log a batch of performance metrics (for client-side batched logging)
+ * @param {Array} batch - Array of performance metric objects
+ */
+function logPerformanceBatch(batch) {
+  // Debug: Log to Apps Script console
+  Logger.log('logPerformanceBatch called with ' + (batch ? batch.length : 0) + ' items');
+  
+  if (!PERFORMANCE_LOG_SHEET_ID || PERFORMANCE_LOG_SHEET_ID.indexOf('YOUR_') !== -1) {
+    Logger.log('PERFORMANCE_LOG_SHEET_ID not configured. Value: ' + PERFORMANCE_LOG_SHEET_ID);
+    Logger.log('Performance batch (not logged to sheet): ' + JSON.stringify(batch));
+    return;
+  }
+  
+  try {
+    Logger.log('Opening spreadsheet: ' + PERFORMANCE_LOG_SHEET_ID);
+    var spreadsheet = SpreadsheetApp.openById(PERFORMANCE_LOG_SHEET_ID);
+    var sheet = spreadsheet.getSheetByName('PerformanceLog');
+    
+    // Create sheet if it doesn't exist
+    if (!sheet) {
+      Logger.log('Creating new PerformanceLog sheet');
+      sheet = spreadsheet.insertSheet('PerformanceLog');
+      // Add headers
+      sheet.appendRow(['Timestamp', 'Event Type', 'Duration (ms)', 'Cache Status', 'Data Size', 'Additional Info', 'Session ID']);
+      Logger.log('Created PerformanceLog sheet with headers');
+    } else {
+      Logger.log('Found existing PerformanceLog sheet');
+    }
+    
+    // Append all rows in batch
+    var rowsAdded = 0;
+    for (var i = 0; i < batch.length; i++) {
+      var m = batch[i];
+      sheet.appendRow([
+        new Date(),
+        m.eventType || 'unknown',
+        m.duration || 0,
+        m.cacheStatus || 'unknown',
+        m.dataSize || 0,
+        m.additionalInfo || '',
+        m.sessionId || ''
+      ]);
+      rowsAdded++;
+    }
+    Logger.log('Added ' + rowsAdded + ' rows to PerformanceLog');
+    
+  } catch (e) {
+    Logger.log('Error logging performance batch: ' + e.message);
+    Logger.log('Stack: ' + e.stack);
+  }
+}
+
+/**
+ * TEST FUNCTION - Run this manually to test logging
+ * Open Apps Script Editor > Run > testLogging
+ */
+function testLogging() {
+  Logger.log('=== Starting testLogging ===');
+  Logger.log('PERFORMANCE_LOG_SHEET_ID = ' + PERFORMANCE_LOG_SHEET_ID);
+  
+  // Test data - includes dataSize (number of items)
+  var testBatch = [
+    {
+      eventType: 'test_search',
+      duration: 150,
+      cacheStatus: 'miss',
+      dataSize: 45,  // THIS IS YOUR ITEM COUNT!
+      additionalInfo: 'Test search with 45 items',
+      sessionId: 'test_' + Date.now()
+    },
+    {
+      eventType: 'test_filter',
+      duration: 50,
+      cacheStatus: 'hit',
+      dataSize: 12,  // 12 items after filter
+      additionalInfo: 'Test filter result',
+      sessionId: 'test_' + Date.now()
+    }
+  ];
+  
+  Logger.log('Test batch prepared: ' + JSON.stringify(testBatch));
+  
+  // Call the batch function
+  logPerformanceBatch(testBatch);
+  
+  Logger.log('=== testLogging complete ===');
+  return 'Test complete - check PerformanceLog sheet and Apps Script Logs';
+}
+
+/**
+ * Get all publications with facets AND track performance
+ */
+function getAllPublicationsWithFacets() {
+  try {
+    // Start timing
+    var startTime = new Date().getTime();
+    
+    var allPubs = getAllPublications();
+    var facets = getFacets(allPubs);
+    
+    // End timing
+    var serverDuration = new Date().getTime() - startTime;
+    
+    return {
+      publications: allPubs,
+      totalCount: allPubs.length,
+      facets: facets,
+      _performance: {
+        serverDuration: serverDuration,
+        timestamp: new Date().toISOString()
+      }
+    };
+    
+  } catch (e) {
+    Logger.log('Load error: ' + e.message);
+    return { error: e.message, publications: [], facets: {} };
+  }
+}
 
 function doGet() {
   return HtmlService.createTemplateFromFile('PublicationsPage')
