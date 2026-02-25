@@ -64,6 +64,8 @@ In `Code.gs`, find this line and replace with your CSV URL:
 
 ```javascript
 const CSV_URL = "YOUR_CSV_URL_HERE";
+var SPREADSHEET_ID = "YOUR_REPOSITORY_URL_HERE";
+var PERFORMANCE_LOG_SHEET_ID = "YOUR_LOG_URL_HERE";
 ```
 
 ### Step 4: Test the Application
