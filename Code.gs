@@ -5,7 +5,7 @@
 
 // ============ CONFIGURATION - UPDATE THIS SPREADSHEET ID ============
 // Get ID from your Google Sheet URL: docs.google.com/spreadsheets/d/THIS_PART/edit
-var SPREADSHEET_ID = '1jfq1489i6bG_HwFBK19ag3P6d_hLHuMZgsM-ylqITHI';
+var SPREADSHEET_ID = 'Repository Spreedsheet ID Here';
 
 // Field mapping - column names in your Google Sheet
 var FIELD_MAPPING = {
@@ -30,7 +30,7 @@ var FIELD_MAPPING = {
 
 // Google Sheet ID for logging performance metrics
 // Get ID from your Google Sheet URL: docs.google.com/spreadsheets/d/THIS_PART/edit
-var PERFORMANCE_LOG_SHEET_ID = '1jfq1489i6bG_HwFBK19ag3P6d_hLHuMZgsM-ylqITHI';
+var PERFORMANCE_LOG_SHEET_ID = 'Log Spreedsheet ID Here';
 
 // Cache for performance timing on server-side
 var _serverStartTime = null;
